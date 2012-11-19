@@ -1,3 +1,16 @@
+/*
+*  (C) 2012, T-ware Inc.
+*
+*  Test select function of Linux for non-block socket.
+*  
+*  - Tody Guo
+*
+*  Open source, GPL2.0
+* 
+*/
+
+
+
 #include <stdio.h>
 #include <string.h>
 #include <sys/select.h>
@@ -29,18 +42,18 @@ int main(int argc, char **argv)
 
 	if (-1 == bind(fd, (struct sockaddr *)&addr, sizeof(addr)))
 	{
-		printf("bind err");
+		printf("bind err\n");
 		return (1);
 	}
 								    
 	if(-1 == listen(fd, 5))
 	{
-		printf("listen err");
+		printf("listen err\n");
 		return (1);
 	}
 	
 
-	printf("Initialing... ok");
+	printf("Initialing... ok\n");
 
 	while(1)
 	{
@@ -55,7 +68,6 @@ int main(int argc, char **argv)
 
 			case 0:
 				printf("timeout %u\r", count++);
-				fflush(stdout);
 				break;
 
 			default:
@@ -64,18 +76,28 @@ int main(int argc, char **argv)
 					len = sizeof(cli_addr);
 
 					new_fd = accept(fd, (struct sockaddr *)&cli_addr, &len);
-					recv(new_fd, buf, sizeof(buf), 0);
+					if(recv(new_fd, buf, sizeof(buf), 0)<0)
+					{
+						printf("recv error occured!\n");
+						close(new_fd);
+						continue;
+					}
 					buf[strlen(buf)]='\0';
 					printf("\nRECV: %s len: %d \n", buf, strlen(buf));
 					
-					send(new_fd, buf, sizeof(buf), 0);
+					if(send(new_fd, buf, sizeof(buf), 0)<0)
+					{
+						printf("send error occured!\n");
+						close(new_fd);
+						continue;
+					}
 
 					close(new_fd);
 				}
-			fflush(stdout);
 		
 		}
 	
+		fflush(stdout);
 	}
 
 
