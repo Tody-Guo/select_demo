@@ -27,8 +27,8 @@ int main(int argc, char **argv)
 	int len;
 	char buf[1024] = {'\0'};
 	long count = 0;
-
-    fd = socket(AF_INET, SOCK_STREAM, 0);
+	
+	fd = socket(AF_INET, SOCK_STREAM, 0);
 
 	memset(&addr, '\0' , sizeof(addr)); 		    
 	addr.sin_family = AF_INET;
